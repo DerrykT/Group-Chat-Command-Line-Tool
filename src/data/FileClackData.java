@@ -1,5 +1,7 @@
 package data;
 
+import java.text.SimpleDateFormat;
+
 public class FileClackData extends ClackData {
     private String fileName;
     private String fileContents;
@@ -42,11 +44,12 @@ public class FileClackData extends ClackData {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        return super.toString() + "," + this.fileName + "," + this.fileContents;
     }
 }

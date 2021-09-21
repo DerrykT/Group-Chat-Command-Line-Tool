@@ -23,15 +23,15 @@ public class ClackClient {
     }
 
     public ClackClient( String userName, String hostName ) {
-        new ClackClient( userName, hostName, DEFAULT_PORT );
+        this( userName, hostName, DEFAULT_PORT );
     }
 
     public ClackClient( String userName ) {
-        new ClackClient( userName, DEFAULT_HOST );
+        this( userName, DEFAULT_HOST );
     }
 
     public ClackClient() {
-        new ClackClient( "ANON" );
+        this( "ANON" );
     }
 
     public void start() {
@@ -75,12 +75,13 @@ public class ClackClient {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return this.userName + "," + this.hostName + "," + this.port + "," + this.closeConnection + ","
+                + this.dataToSendToServer.toString() + "," + this.dataToReceiveFromServer.toString();
     }
 
 }

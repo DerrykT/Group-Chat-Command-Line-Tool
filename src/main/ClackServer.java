@@ -17,7 +17,7 @@ public class ClackServer {
     }
 
     public ClackServer() {
-        new ClackServer( DEFAULT_PORT );
+        this( DEFAULT_PORT );
     }
 
     public void start() {
@@ -44,12 +44,13 @@ public class ClackServer {
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+        
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "" + this.port + "," + this.closeConnection + "," + this.dataToReceiveFromClient.toString()
+                + "," + this.dataToSendToClient.toString();
     }
 
 }

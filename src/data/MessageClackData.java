@@ -1,5 +1,7 @@
 package data;
 
+import java.text.SimpleDateFormat;
+
 public class MessageClackData extends ClackData{
     private String message;
 
@@ -9,7 +11,7 @@ public class MessageClackData extends ClackData{
     }
 
     public MessageClackData () {
-        super(); //not sure if this is correct, maybe use MessageClackData instead??
+        super();
     }
 
     public String getData() {
@@ -25,12 +27,12 @@ public class MessageClackData extends ClackData{
 
     @Override
     public boolean equals(Object obj) {
-        return super.equals(obj);
+
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return super.toString() + "," + this.message;
     }
 
 

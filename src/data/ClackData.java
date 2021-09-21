@@ -1,5 +1,6 @@
 package data;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ClackData {
@@ -14,11 +15,11 @@ public class ClackData {
     }
 
     public ClackData( int type ) {
-        new ClackData( "Anon", type );
+        this( "Anon", type );
     }
 
     public ClackData() {
-        new ClackData( 0 );
+        this( 0 );
     }
 
     public String getUserName() {
@@ -37,4 +38,9 @@ public class ClackData {
 //        return new ClackData( this.userName, this.type );
 //    }
 
+    @Override
+    public String toString() {
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        return "" + this.userName + "," + this.type + "," + formatter.format(this.date);
+    }
 }
