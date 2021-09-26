@@ -44,7 +44,7 @@ public class FileClackData extends ClackData {
 
     @Override
     public boolean equals(Object obj) {
-
+        return this.toString() == obj.toString();
     }
 
     @Override

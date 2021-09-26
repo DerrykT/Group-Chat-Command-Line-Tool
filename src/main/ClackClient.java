@@ -75,7 +75,7 @@ public class ClackClient {
 
     @Override
     public boolean equals(Object obj) {
-
+        return this.toString() == obj.toString();
     }
 
     @Override

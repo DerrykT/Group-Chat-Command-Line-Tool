@@ -3,7 +3,7 @@ package data;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ClackData {
+public abstract class ClackData {
     private String userName;
     private int type;
     private Date date;
@@ -34,9 +34,7 @@ public class ClackData {
         return date;
     }
 
-//    public ClackData getData() {
-//        return new ClackData( this.userName, this.type );
-//    }
+    public abstract Object getData();
 
     @Override
     public String toString() {
