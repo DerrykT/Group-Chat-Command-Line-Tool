@@ -57,7 +57,6 @@ public class ClackServer {
         return port;
     }
 
-    //FINISH OVERRIDE METHODS
     /**
      * This method overrides the hashCode() method in the Object class
      *

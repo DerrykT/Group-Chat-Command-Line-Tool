@@ -43,8 +43,6 @@ public class MessageClackData extends ClackData{
     }
 
 
-    //hasCode, equals, and toString are not finished
-
     /**
      * This method overrides the hashCode() method from the Object class
      *

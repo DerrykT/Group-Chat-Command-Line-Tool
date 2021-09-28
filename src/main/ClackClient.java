@@ -91,20 +91,33 @@ public class ClackClient {
         //NO CODE FOR PART 1
     }
 
+    /**
+     * This is the accessor for userName
+     *
+     * @return the userName
+     */
     public String getUserName() {
         return userName;
     }
 
+    /**
+     * This is the accessor for hostName
+     *
+     * @return the hostName
+     */
     public String getHostName() {
         return hostName;
     }
 
+    /**
+     * This is the accessor for port
+     *
+     * @return the port
+     */
     public int getPort() {
         return port;
     }
 
-
-    //NEED TO FINISH OVERRIDE METHODS
 
     /**
      * This method overrides the hashCode() method in the Object class
