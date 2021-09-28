@@ -44,16 +44,39 @@ public class MessageClackData extends ClackData{
 
 
     //hasCode, equals, and toString are not finished
+
+    /**
+     * This method overrides the hashCode() method from the Object class
+     *
+     * @return
+     */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = 17;
+        result = 37*result + super.toString().hashCode();
+        if(this.message == null)
+            result = 37*result + 300;
+        else
+            result = 37*result + this.message.hashCode();
+        return result;
     }
 
+    /**
+     * This method overrides the equals() method from the Object class
+     *
+     * @param obj provides obj to compare to another object
+     * @return a boolean which is true if two instances are equal and false if they are not
+     */
     @Override
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
 
+    /**
+     * This method overrides the toString() method from the ClackData class and the Object class
+     *
+     * @return the username, type, date, and message separated by commas
+     */
     @Override
     public String toString() {
         return super.toString() + "," + this.message;

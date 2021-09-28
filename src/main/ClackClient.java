@@ -30,7 +30,10 @@ public class ClackClient {
     public ClackClient( String userName, String hostName, int port ) {
         this.userName = userName;
         this.hostName = hostName;
-        this.port = port;
+        if (port < 0)
+            this.port = port;
+        else
+            this.port = DEFAULT_PORT;
         this.closeConnection = false;
         this.dataToSendToServer = null;
         this.dataToReceiveFromServer = null;
@@ -102,20 +105,58 @@ public class ClackClient {
 
 
     //NEED TO FINISH OVERRIDE METHODS
+
+    /**
+     * This method overrides the hashCode() method in the Object class
+     *
+     * @return a hashcode of the object
+     */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = 17;
+        result = 37*result + this.userName.hashCode();
+        result = 37*result + this.hostName.hashCode();
+        result = 37*result + this.port;
+        if (this.closeConnection)
+            result = 37*result + 1;
+        else
+            result = 37*result;
+        if(this.dataToSendToServer == null)
+            result = 37*result + 100;
+        else
+            result = 37*result + this.dataToSendToServer.hashCode();
+        if(this.dataToReceiveFromServer == null)
+            result = 37*result + 105;
+        else
+            result = 37*result + this.dataToReceiveFromServer.hashCode();
+        return result;
     }
-
+    /**
+     * This method overrides the equals() method from the Object class
+     *
+     * @param obj provides obj to compare to another object
+     * @return a boolean which is true if two instances are equal and false if they are not
+     */
     @Override
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
-
+    /**
+     * This method overrides the toString() method from the ClackData class and the Object class
+     *
+     * @return the username, hostname, port, connection, data to send to server and the data to receive from server,
+     * separated by commas
+     */
     @Override
     public String toString() {
-        return this.userName + "," + this.hostName + "," + this.port + "," + this.closeConnection + ","
-                + this.dataToSendToServer.toString() + "," + this.dataToReceiveFromServer.toString();
+        String output = this.userName + "," + this.hostName + "," + this.port + "," + this.closeConnection + ",";
+        if(this.dataToSendToServer == null && this.dataToReceiveFromServer == null)
+            return output + "null,null";
+        if(this.dataToSendToServer == null)
+            return output + "null, " + this.dataToReceiveFromServer.toString();
+        if(this.dataToReceiveFromServer == null)
+            return output + this.dataToSendToServer.toString() + ", null";
+        return output + this.dataToSendToServer.toString() + "," + this.dataToReceiveFromServer.toString();
     }
 
 }

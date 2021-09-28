@@ -49,7 +49,7 @@ public abstract class ClackData {
     }
 
     /**
-     * This is a accessor for the username
+     * This is an accessor for the username
      *
      * @return Value of the username
      */
@@ -58,7 +58,7 @@ public abstract class ClackData {
     }
 
     /**
-     * This is a accessor for the type
+     * This is an accessor for the type
      *
      * @return Value of the type
      */
@@ -67,7 +67,7 @@ public abstract class ClackData {
     }
 
     /**
-     * This is a accessor for the date
+     * This is an accessor for the date
      *
      * @return Value of date
      */
@@ -76,14 +76,14 @@ public abstract class ClackData {
     }
 
     /**
-     * This is a abstract method that accesses the data of a class
+     * This is an abstract method that accesses the data of a class
      *
      * @return the data contained in a ClackData class
      */
     public abstract Object getData();
 
     /**
-     * This is a overridden toString() method
+     * This is an overridden toString() method
      *
      * @return the username, type, and date separated by commas
      */
