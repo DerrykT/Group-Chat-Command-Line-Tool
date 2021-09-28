@@ -72,7 +72,6 @@ public class FileClackData extends ClackData {
         //No Code for Part 1
     }
 
-    //Need to finish hashCode, equals, and toString
 
     /**
      * This method overrides the hashCode() method in the Object class
