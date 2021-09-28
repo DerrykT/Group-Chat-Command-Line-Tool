@@ -73,19 +73,51 @@ public class FileClackData extends ClackData {
     }
 
     //Need to finish hashCode, equals, and toString
+
+    /**
+     * This method overrides the hashCode() method in the Object class
+     *
+     *
+     * @return a hashcode of the object
+     */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = 17;
+        result = 37*result + super.toString().hashCode();
+        result = 37*result + this.fileName.hashCode();
+        if(this.fileContents == null)
+            result = 37*result + 200;
+        else
+            result = 37*result + this.fileContents.hashCode();
+        return result;
     }
 
+
+
+    /**
+     * This method overrides the equals() method from the Object class
+     *
+     * @param obj provides obj to compare to another object
+     * @return a boolean which is true if two instances are equal and false if they are not
+     */
     @Override
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
-
+    /**
+     * This method overrides the toString() method from the ClackData class and the Object class
+     *
+     *
+     * @return the username, type, date, fileName, and fileContents separated by commas
+     */
     @Override
     public String toString() {
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-        return super.toString() + "," + this.fileName + "," + this.fileContents;
+        String output = super.toString() + "," + this.fileName + ",";
+        //cannot return null values so toString checks if fileContents is null
+        if(this.fileContents == null) {
+            return output += "null";
+        }
+        return output + this.fileContents;
     }
 }

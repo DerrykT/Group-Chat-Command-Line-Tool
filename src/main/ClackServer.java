@@ -25,7 +25,10 @@ public class ClackServer {
      * @param port
      */
     public ClackServer( int port ) {
-        this.port = port;
+        if (port < 0)
+            this.port = port;
+        else
+            this.port = DEFAULT_PORT;
         this.dataToReceiveFromClient = null;
         this.dataToSendToClient = null;
     }
@@ -55,20 +58,55 @@ public class ClackServer {
     }
 
     //FINISH OVERRIDE METHODS
+    /**
+     * This method overrides the hashCode() method in the Object class
+     *
+     * @return a hashcode of the object
+     */
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int result = 17;
+        result = 37*result + this.port;
+        if (this.closeConnection)
+            result = 37*result + 1;
+        else
+            result = 37*result;
+        if(this.dataToReceiveFromClient == null)
+            result = 37*result + 100;
+        else
+            result = 37*result + this.dataToReceiveFromClient.hashCode();
+        if(this.dataToSendToClient == null)
+            result = 37*result + 105;
+        else
+            result = 37*result + this.dataToSendToClient.hashCode();
+        return result;
     }
-
+    /**
+     * This method overrides the equals() method from the Object class
+     *
+     * @param obj provides obj to compare to another object
+     * @return a boolean which is true if two instances are equal and false if they are not
+     */
     @Override
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
-
+    /**
+     * This method overrides the toString() method from the ClackData class and the Object class
+     *
+     * @return the port, connection, data to receive from client and the data to send to client,
+     * separated by commas
+     */
     @Override
     public String toString() {
-        return "" + this.port + "," + this.closeConnection + "," + this.dataToReceiveFromClient.toString()
-                + "," + this.dataToSendToClient.toString();
+        String output = "" + this.port + "," + this.closeConnection + ",";
+        if(this.dataToReceiveFromClient == null && this.dataToSendToClient == null)
+            return output + "null,null";
+        if(this.dataToReceiveFromClient == null)
+            return output + this.dataToSendToClient.toString();
+        if(this.dataToSendToClient == null)
+            return output + this.dataToReceiveFromClient.toString();
+        return output + this.dataToReceiveFromClient.toString() + "," + this.dataToSendToClient.toString();
     }
 
 }
