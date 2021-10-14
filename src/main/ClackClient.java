@@ -80,12 +80,12 @@ public class ClackClient {
      */
     public void start() {
         try {
-            dataToReceiveFromServer = dataToSendToServer; //Temporary code to aid debugging for Part 2
             this.inFromStd = new Scanner(System.in);
-//            readClientData();
+            readClientData();
+            dataToReceiveFromServer = dataToSendToServer; //Temporary code to aid debugging for Part 2
             printData();
         } catch (NullPointerException e) {
-            System.out.println("dataToSendToServer was never initialized");
+            System.out.println("The connection is closed: " + this.closeConnection);
         }
     }
 
@@ -93,38 +93,39 @@ public class ClackClient {
      * This method gets an input from the user through standard input and initializes
      * the dataToSendToServer instance variable based on the input
      */
-//    public void readClientData() {
-//        try {
-//            String input = inFromStd.next();
-//            if (input.equals("DONE")) {
-//                this.closeConnection = true;
-//            } else if (input.equals("SENDFILE")) {
-//                String filename = inFromStd.next();
-//                dataToSendToServer = new FileClackData(this.userName, filename, ClackData.CONSTANT_SENDFILE);
-//                try {
-//                    dataToSendToServer.readFileContents(); //not sure why it isn't working, ask TA
-//                } catch (IOException e) {
-//                    dataToSendToServer = null;
-//                    System.err.println("Failed to read " + filename);
-//                    System.err.println(e.getMessage());
-//                }
-//            } else if (input.equals("LISTUSERS")) {
-//                System.out.println("list users called"); //used only for debugging purposes
-//                //Does Nothing For Part 2 of Project
-//            } else {
-//                String message = input;
-//                while(!input.equals("\n")) {
-//                    input = inFromStd.next();
-//                    message += input;
-//                }
-//                this.dataToSendToServer = new MessageClackData(this.userName, "",ClackData.CONSTANT_SENDMESSAGE);
-//            }
-//        } catch (NoSuchElementException e) {
-//            System.err.println(e.getMessage());
-//            inFromStd.close();
-//        }
-//        inFromStd.close();
-//    }
+    public void readClientData() {
+        try {
+            String input = inFromStd.next();
+            if (input.equals("DONE")) {
+                this.closeConnection = true;
+            } else if (input.equals("SENDFILE")) {
+                String filename = inFromStd.next();
+                this.dataToSendToServer = new FileClackData(this.userName, filename, ClackData.CONSTANT_SENDFILE);
+                try {
+                    ((FileClackData)this.dataToSendToServer).readFileContents("TIME");
+                } catch (IOException e) {
+                    dataToSendToServer = null;
+                    System.err.println("Failed to read " + filename);
+                    System.err.println(e.getMessage());
+                    inFromStd.close();
+                }
+            } else if (input.equals("LISTUSERS")) {
+                System.out.println("list users called"); //used only for debugging purposes, will be deleted
+                //Does Nothing For Part 2 of Project
+            } else {
+                String message = input;
+                while(!input.contains("DONE")) {
+                    input = inFromStd.nextLine();
+                    message = message + input + "\n";
+                }
+                this.dataToSendToServer = new MessageClackData(this.userName, message, "TIME",ClackData.CONSTANT_SENDMESSAGE);
+            }
+        } catch (NoSuchElementException e) {
+            System.err.println(e.getMessage());
+            inFromStd.close();
+        }
+        inFromStd.close();
+    }
 
     public void sendData() {
         //NO CODE FOR PART 2
@@ -139,7 +140,7 @@ public class ClackClient {
      * standard output and the getData() abstract method
      */
     public void printData() {
-        System.out.println(dataToReceiveFromServer.getData());
+        System.out.println(this.dataToReceiveFromServer.getData("TIME"));
     }
 
     /**

@@ -6,23 +6,35 @@ import java.util.Scanner;
 
 public class TestClackClient {
     public static void main(String []args) {
-        ClackClient c1 = new ClackClient("My Username1", "My Hostname1", 6000);
 
-        c1.start();
-//
-//        Scanner scanner = new Scanner(System.in);
-//        String text = scanner.next();
-//        if(text.equals("hi")) {
-//            System.out.println("bye");
-//        } else {
-//            System.out.println(text);
-//        }
+        ClackClient clientTest = new ClackClient("My Username1", "My Hostname1", 6000);
 
-//        ClackClient c2 = new ClackClient("My Username2", "My Hostname2");
-//        ClackClient c3 = new ClackClient("My Username3");
-//        ClackClient c4 = new ClackClient();
-//
-//
+        clientTest.start();
+        /*
+        enter "SENDFILE src\test\Part2_document.txt" to test the FileClackData functionality
+        outputs the file contents of Part2_document.txt
+
+        enter "this is a message DONE" to test the MessageClackData functionality
+
+        when you enter "DONE", the method will print out the value of the closeConnection boolean instance variable, only
+        done for debugging purposes and will be deleted.
+
+        when you enter "LISTUSERS", it will print that LISTUSERS has been called. This is only printed for debugging purposes
+        and will be deleted.
+        */
+
+
+
+
+
+
+
+
+
+
+
+
+//        extra testing for part 1 of project
 //        System.out.println("Data for c1: ");//prints out data for c1
 //        System.out.println(c1.getUserName());
 //        System.out.println(c1.getHostName());
@@ -39,7 +51,7 @@ public class TestClackClient {
 //        System.out.println(c4.getUserName());
 //        System.out.println(c4.getHostName());
 //        System.out.println(c4.getPort());
-//
+
 //        //calls the hashcode method for each ClackClient object
 //        System.out.println("Testing hashCode() method:");
 //        System.out.println(c1.hashCode());

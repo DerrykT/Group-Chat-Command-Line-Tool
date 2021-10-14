@@ -28,7 +28,7 @@ public class FileClackData extends ClackData {
     public FileClackData( String userName, String fileName, int type ) {
         super( userName, type );
         this.fileName = fileName;
-        this.fileContents = null;
+        this.fileContents = "";
     }
 
     /**
@@ -123,10 +123,10 @@ public class FileClackData extends ClackData {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             try {
                 String fileData = "";
-                String line = "";
+                String line;
 
                 while((line = br.readLine()) != EOS) {
-                    fileData += decrypt(line, key);
+                    fileData += encrypt(line, key);
                 }
 
                 br.close();
@@ -178,7 +178,7 @@ public class FileClackData extends ClackData {
             File fileName = new File(this.fileName);
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
             try {
-                bw.write(encrypt(this.fileContents, key));
+                bw.write(decrypt(this.fileContents, key));
                 bw.close();
             } catch (IOException ioe) {
                 bw.close();

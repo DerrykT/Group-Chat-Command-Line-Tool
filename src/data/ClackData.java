@@ -116,9 +116,13 @@ public abstract class ClackData {
             if(keyIteration >= key.length()) {
                 keyIteration = 0;
             }
-            encryptedInput += findCharWithKey(inputStringToEncrypt.charAt(i), key.charAt(keyIteration), false);
-            if(!(inputStringToEncrypt.charAt(i) == ' ')) { //prevents the key from iterating if no encryption was done due to a space
+            if(!(inputStringToEncrypt.charAt(i) == ' ')
+                    && (CONSTANT_LOWERCASE_ALPHABET.contains("" + Character.toLowerCase(inputStringToEncrypt.charAt(i)))))
+            { //prevents the key from iterating if no encryption was done due to a space
+                encryptedInput += findCharWithKey(inputStringToEncrypt.charAt(i), key.charAt(keyIteration), false);
                 keyIteration++;
+            } else {
+                encryptedInput += inputStringToEncrypt.charAt(i);
             }
         }
         return encryptedInput;
@@ -139,9 +143,14 @@ public abstract class ClackData {
             if(keyIteration >= key.length()) {
                 keyIteration = 0;
             }
-            decryptedInput += findCharWithKey(inputStringToDecrypt.charAt(i), key.charAt(keyIteration), true);
-            if(!(inputStringToDecrypt.charAt(i) == ' ')) { //prevents the key from iterating if no decryption was done due to a space
+
+            if(!(inputStringToDecrypt.charAt(i) == ' ')
+                    && (CONSTANT_LOWERCASE_ALPHABET.contains("" + Character.toLowerCase(inputStringToDecrypt.charAt(i)))))
+            { //prevents the key from iterating if no decryption was done due to a non encrypted character
+                decryptedInput += findCharWithKey(inputStringToDecrypt.charAt(i), key.charAt(keyIteration), true);
                 keyIteration++;
+            } else {
+                decryptedInput += inputStringToDecrypt.charAt(i);
             }
         }
         return  decryptedInput;
@@ -155,14 +164,12 @@ decrypt the input parameter or if false, will encrypt the given parameter
     private char findCharWithKey(char input, char key, boolean decryptOn) {
         char outputChar;
         int pointAtAlphabet;
-        if(input == ' ') {
-            return ' ';
-        }
+
         if(decryptOn) { //decrypting the character
             if(Character.isUpperCase(input)) { //returning a uppercase letter because input is uppercase
                 pointAtAlphabet =
                         CONSTANT_UPPERCASE_ALPHABET.indexOf(input) -
-                                CONSTANT_UPPERCASE_ALPHABET.indexOf(key);
+                                CONSTANT_UPPERCASE_ALPHABET.indexOf(Character.toUpperCase(key));
                 if(pointAtAlphabet < 0) {
                     pointAtAlphabet = CONSTANT_ALPHABET_LENGTH - (pointAtAlphabet * -1);
                 }
@@ -170,7 +177,7 @@ decrypt the input parameter or if false, will encrypt the given parameter
             } else { //returning a lowercase letter because input is uppercase
                 pointAtAlphabet =
                         CONSTANT_LOWERCASE_ALPHABET.indexOf(input) -
-                                CONSTANT_LOWERCASE_ALPHABET.indexOf(key);
+                                CONSTANT_LOWERCASE_ALPHABET.indexOf(Character.toLowerCase(key));
                 if(pointAtAlphabet < 0) {
                     pointAtAlphabet = CONSTANT_ALPHABET_LENGTH - (pointAtAlphabet * -1);
                 }
@@ -188,7 +195,7 @@ decrypt the input parameter or if false, will encrypt the given parameter
             } else { //returning a lowercase letter because input is uppercase
                 pointAtAlphabet =
                         CONSTANT_LOWERCASE_ALPHABET.indexOf(input) +
-                                CONSTANT_LOWERCASE_ALPHABET.indexOf(Character.toUpperCase(key));
+                                CONSTANT_LOWERCASE_ALPHABET.indexOf(Character.toLowerCase(key));
                 if(pointAtAlphabet >= CONSTANT_ALPHABET_LENGTH) {
                     pointAtAlphabet -= CONSTANT_ALPHABET_LENGTH;
                 }
