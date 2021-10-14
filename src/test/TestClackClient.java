@@ -11,16 +11,22 @@ public class TestClackClient {
 
         clientTest.start();
         /*
-        enter "SENDFILE src\test\Part2_document.txt" to test the FileClackData functionality
-        outputs the file contents of Part2_document.txt
+            Below includes the test cases used in standard input to test the functionality of the ClackClient
+            class, specifically the start() method.
 
-        enter "this is a message DONE" to test the MessageClackData functionality
+            1.  INPUT: DONE
+                OUTPUT: The connection is closed: true
+                (NOTE:normally no output will be given, only done for debugging)
 
-        when you enter "DONE", the method will print out the value of the closeConnection boolean instance variable, only
-        done for debugging purposes and will be deleted.
+            2.  INPUT:SENDFILE src\test\Part2_document.txt
+                OUTPUT: A digital computer can usually be regarded as consisting of three parts: (i) Store. (ii) Executive unit. (iii) Control. ...The executive unit is the part which carries out the various individual operations involved in a calculation. ...It is the duty of the control to see that...[the table of] instructions are obeyed correctly and in the right order. ...A typical instruction might say—"Add the number stored in position 6809 to that in 4302 and put the result back into the latter storage position." Needless to say it would not occur in the machine expressed in English. It would more likely be coded in a form such as 6809430217. Here 17 says which of various possible operations [add] is to be performed on the two numbers. ...It will be noticed that the instruction takes up 10 digits and so forms one packet of information...
+                (NOTE: The output is the decrypted contents of the file)
 
-        when you enter "LISTUSERS", it will print that LISTUSERS has been called. This is only printed for debugging purposes
-        and will be deleted.
+            3.  INPUT: LISTUSERS
+                OUTPUT: list users called
+
+            4.  INPUT: this is a message DONE
+                OUTPUT: this is a message DONE
         */
 
 

@@ -85,7 +85,8 @@ public class ClackClient {
             dataToReceiveFromServer = dataToSendToServer; //Temporary code to aid debugging for Part 2
             printData();
         } catch (NullPointerException e) {
-            System.out.println("The connection is closed: " + this.closeConnection);
+            //used to catch cases where LISTUSERS or DONE is called, dataToReceiveFromServer is null if those options are called
+//            System.out.println("The connection is closed: " + this.closeConnection);
         }
     }
 
