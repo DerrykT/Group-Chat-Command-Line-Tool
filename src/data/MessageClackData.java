@@ -7,7 +7,8 @@ package data;
  * @author Derryk Taylor
  * @author Jay Donahue
  */
-public class MessageClackData extends ClackData{
+public class MessageClackData extends ClackData {
+
     private String message; /**represents instant message content*/
 
     /**
@@ -15,13 +16,29 @@ public class MessageClackData extends ClackData{
      * super constructor of the ClackData abstract class and initializes message
      * to a user-provided value.
      *
-     * @param userName
-     * @param message
-     * @param type
+     * @param userName new userName value
+     * @param message new message value
+     * @param type new type value
      */
     public MessageClackData( String userName, String message, int type ) {
         super ( userName, type );
         this.message = message;
+    }
+
+    /**
+     * This MessageClackData constructor initializes the userName and type using the
+     * super constructor of the ClackData abstract class and initializes message
+     * to a encrypted user-provided string using the ClackData encrypt method and the
+     * user given encryption key
+     *
+     * @param userName new userName value
+     * @param message new message value
+     * @param key new key value
+     * @param type new type value
+     */
+    public MessageClackData( String userName, String message, String key, int type) {
+        super(userName, type);
+        this.message = encrypt(message, key);
     }
 
     /**
@@ -42,11 +59,22 @@ public class MessageClackData extends ClackData{
         return this.message;
     }
 
+    /**
+     * This method overrides the getData(String key) abstract overloaded method of
+     * the abstract class ClackData
+     *
+     * @param key the key used the decrypt the message
+     * @return
+     */
+    public String getData(String key) {
+        return decrypt(this.message, key);
+    }
+
 
     /**
      * This method overrides the hashCode() method from the Object class
      *
-     * @return
+     * @return returns the resulting hashcode given to the class instance
      */
     @Override
     public int hashCode() {

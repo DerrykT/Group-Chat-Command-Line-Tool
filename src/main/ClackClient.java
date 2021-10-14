@@ -1,6 +1,12 @@
 package main;
 
 import data.ClackData;
+import data.FileClackData;
+import data.MessageClackData;
+
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 /**
  * The ClackClient class represents the client user.
@@ -15,37 +21,35 @@ public class ClackClient {
     private boolean closeConnection; /**whether the connection is open or not*/
     private ClackData dataToSendToServer; /**data sent to the server*/
     private ClackData dataToReceiveFromServer; /**data received from the server*/
+    private Scanner inFromStd = null;
 
     private static final int DEFAULT_PORT = 7000; /**default port number*/
     private static final String DEFAULT_HOST = "localhost"; /** the server and client programs run on the same computer*/
 
     /**
      * This ClackClient constructor initializes the userName, hostName, and port to user-provided values.
-     * Initializes the closeConnection to false, and the dataToSendToServer and dataToReceiveFromServer to null values.
+     * Initializes the closeConnection to false, and the dataToSendToServer and dataToReceiveFromServer to null values
      *
-     * @param userName
-     * @param hostName
-     * @param port
+     * @param userName new userName value
+     * @param hostName new hostName value
+     * @param port new port value
      */
-    public ClackClient( String userName, String hostName, int port ) {
+    public ClackClient( String userName, String hostName, int port ) throws IllegalArgumentException {
+        if(userName == null || hostName == null || port < 1024) {
+            throw new IllegalArgumentException("Invalid port number, username, and/or hostname being used");
+        }
         this.userName = userName;
         this.hostName = hostName;
-        if (port < 0)
-            this.port = port;
-        else
-            this.port = DEFAULT_PORT;
-        this.closeConnection = false;
-        this.dataToSendToServer = null;
-        this.dataToReceiveFromServer = null;
+        this.port = port;
     }
 
     /**
      * This ClackClient constructor initializes the userName and hostName to user-provided values.
      * Initializes the port to the DEFAULT_PORT value, the closeConnection to false, and the
-     * dataToSendToServer and dataToReceiveFromServer to null values.
+     * dataToSendToServer and dataToReceiveFromServer to null values
      *
-     * @param userName
-     * @param hostName
+     * @param userName new userName value
+     * @param hostName new hostName value
      */
     public ClackClient( String userName, String hostName ) {
         this( userName, hostName, DEFAULT_PORT );
@@ -54,9 +58,9 @@ public class ClackClient {
     /**
      * This ClackClient constructor initializes userName to a user-provided value. Initializes
      * hostName to the DEFAULT_HOST value and port to the DEFAULT_PORT value. Initializes
-     * the closeConnection to false, and the dataToSendToServer and dataToReceiveFromServer to null values.
+     * the closeConnection to false, and the dataToSendToServer and dataToReceiveFromServer to null values
      *
-     * @param userName
+     * @param userName new userName value
      */
     public ClackClient( String userName ) {
         this( userName, DEFAULT_HOST );
@@ -65,30 +69,77 @@ public class ClackClient {
     /**
      * This ClackClient Default constructor intiializes username to "ANON", hostName to the DEFAULT_HOST value,
      * port to the DEFAULT_PORT value, the closeConnection to false, and the dataToSendToServer and
-     * dataToReceiveFromServer to null values.
+     * dataToReceiveFromServer to null values
      */
     public ClackClient() {
         this( "ANON" );
     }
 
+    /**
+     * This method starts this client's communication with the server
+     */
     public void start() {
-        //NO CODE FOR PART 1
+        try {
+            dataToReceiveFromServer = dataToSendToServer; //Temporary code to aid debugging for Part 2
+            this.inFromStd = new Scanner(System.in);
+//            readClientData();
+            printData();
+        } catch (NullPointerException e) {
+            System.out.println("dataToSendToServer was never initialized");
+        }
     }
 
-    public void readClientData() {
-        //NO CODE FOR PART 1
-    }
+    /**
+     * This method gets an input from the user through standard input and initializes
+     * the dataToSendToServer instance variable based on the input
+     */
+//    public void readClientData() {
+//        try {
+//            String input = inFromStd.next();
+//            if (input.equals("DONE")) {
+//                this.closeConnection = true;
+//            } else if (input.equals("SENDFILE")) {
+//                String filename = inFromStd.next();
+//                dataToSendToServer = new FileClackData(this.userName, filename, ClackData.CONSTANT_SENDFILE);
+//                try {
+//                    dataToSendToServer.readFileContents(); //not sure why it isn't working, ask TA
+//                } catch (IOException e) {
+//                    dataToSendToServer = null;
+//                    System.err.println("Failed to read " + filename);
+//                    System.err.println(e.getMessage());
+//                }
+//            } else if (input.equals("LISTUSERS")) {
+//                System.out.println("list users called"); //used only for debugging purposes
+//                //Does Nothing For Part 2 of Project
+//            } else {
+//                String message = input;
+//                while(!input.equals("\n")) {
+//                    input = inFromStd.next();
+//                    message += input;
+//                }
+//                this.dataToSendToServer = new MessageClackData(this.userName, "",ClackData.CONSTANT_SENDMESSAGE);
+//            }
+//        } catch (NoSuchElementException e) {
+//            System.err.println(e.getMessage());
+//            inFromStd.close();
+//        }
+//        inFromStd.close();
+//    }
 
     public void sendData() {
-        //NO CODE FOR PART 1
+        //NO CODE FOR PART 2
     }
 
     public void receiveData() {
-        //NO CODE FOR PART 1
+        //NO CODE FOR PART 2
     }
 
+    /**
+     * This method prints out the contents in the dataToReceiveFromServer to the client using the
+     * standard output and the getData() abstract method
+     */
     public void printData() {
-        //NO CODE FOR PART 1
+        System.out.println(dataToReceiveFromServer.getData());
     }
 
     /**
@@ -117,7 +168,6 @@ public class ClackClient {
     public int getPort() {
         return port;
     }
-
 
     /**
      * This method overrides the hashCode() method in the Object class
@@ -162,13 +212,13 @@ public class ClackClient {
      */
     @Override
     public String toString() {
-        String output = this.userName + "," + this.hostName + "," + this.port + "," + this.closeConnection + ",";
+        String output = "" + this.userName + "," + this.hostName + "," + this.port + "," + this.closeConnection + ",";
         if(this.dataToSendToServer == null && this.dataToReceiveFromServer == null)
             return output + "null,null";
         if(this.dataToSendToServer == null)
-            return output + "null, " + this.dataToReceiveFromServer.toString();
+            return output + "null," + this.dataToReceiveFromServer.toString();
         if(this.dataToReceiveFromServer == null)
-            return output + this.dataToSendToServer.toString() + ", null";
+            return output + this.dataToSendToServer.toString() + ",null";
         return output + this.dataToSendToServer.toString() + "," + this.dataToReceiveFromServer.toString();
     }
 

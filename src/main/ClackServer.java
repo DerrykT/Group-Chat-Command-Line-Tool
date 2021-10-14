@@ -53,6 +53,11 @@ public class ClackServer {
         //NO CODE FOR PART 1
     }
 
+    /**
+     * This is the accessor for the port
+     *
+     * @return value of port
+     */
     public int getPort() {
         return port;
     }

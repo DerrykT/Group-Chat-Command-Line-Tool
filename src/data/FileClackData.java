@@ -1,5 +1,6 @@
 package data;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 
 /**
@@ -13,14 +14,16 @@ public class FileClackData extends ClackData {
     private String fileName; /**represents name of file*/
     private String fileContents; /**represents contents of file*/
 
+    private final static String EOS = null; /**Constant used to determine end of file*/
+
     /**
      * This FileClackData constructor initializes the userName and type to user provided
      * values using the ClackData constructor. It initializes the fileName to a user
      * provided value and fileContents to null.
      *
-     * @param userName
-     * @param fileName
-     * @param type
+     * @param userName new userName value
+     * @param fileName new fileName value
+     * @param type new type value
      */
     public FileClackData( String userName, String fileName, int type ) {
         super( userName, type );
@@ -38,7 +41,7 @@ public class FileClackData extends ClackData {
     /**
      * This is the mutator for fileName
      *
-     * @param fileName   new fileName value
+     * @param fileName new fileName value
      */
     public void setFileName( String fileName ) {
         this.fileName = fileName;
@@ -64,18 +67,133 @@ public class FileClackData extends ClackData {
         return this.fileContents;
     }
 
-    public void readFileContents() {
-        //No Code for Part 1
+    /**
+     * This method overrides the getData(String key) abstract method
+     * of the abstract class ClackData.
+     *
+     * @param key
+     * @return decrypted value of fileContent
+     */
+    public String getData(String key) {
+        return decrypt(this.fileContents, key);
     }
 
-    public void writeFileContents() {
-        //No Code for Part 1
+    /**
+     * This method does a non-secure file read of the fileName instance variable and sets
+     * the instance variable fileContents to the the contents read from the file.
+     *
+     * @throws IOException
+     */
+    public void readFileContents() throws IOException {
+        try {
+            File fileName = new File(this.fileName);
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            try {
+                String fileData = "";
+                String line = "";
+
+                while((line = br.readLine()) != EOS) {
+                    fileData += line;
+                }
+
+                br.close();
+                this.fileContents = fileData;
+            } catch (IOException ioe) {
+                br.close();
+                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+            }
+        } catch (FileNotFoundException fnfe) {
+            throw new FileNotFoundException("The file " + this.fileName + " is not available: " + fnfe.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Null file given: " + npe.getMessage());
+        }
+    }
+
+    /**
+     * This overloaded method does a secure file read of the instance variable fileName using
+     * the key parameter to decrypt the file contents and sets the instance variable fileContents
+     * to the decrypted file content.
+     *
+     * @param key the key used to decrypt file content
+     * @throws IOException
+     */
+    public void readFileContents(String key) throws IOException {
+        try {
+            File fileName = new File(this.fileName);
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            try {
+                String fileData = "";
+                String line = "";
+
+                while((line = br.readLine()) != EOS) {
+                    fileData += decrypt(line, key);
+                }
+
+                br.close();
+                this.fileContents = fileData;
+            } catch (IOException ioe) {
+                br.close();
+                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+            }
+        } catch (FileNotFoundException fnfe) {
+            throw new FileNotFoundException("The file" + this.fileName + " is not available: " + fnfe.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Null file given: " + npe.getMessage());
+        }
+    }
+
+    /**
+     * This method does a non-secure file write of the fileContent instance variable
+     * to the instance variable fileName.
+     *
+     * @throws IOException
+     */
+    public void writeFileContents() throws IOException {
+        try {
+            File fileName = new File(this.fileName);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
+            try {
+                bw.write(this.fileContents);
+                bw.close();
+            } catch (IOException ioe) {
+                bw.close();
+                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+            }
+        } catch (FileNotFoundException fnfe) {
+            throw new FileNotFoundException("The file" + this.fileName + " is not available: " + fnfe.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Null file given: " + npe.getMessage());
+        }
+    }
+
+    /**
+     * This method does a secure file write of the fileContent instance variable
+     * to the instance variable fileName
+     *
+     * @param key the key used to encrypt the file contents
+     * @throws IOException
+     */
+    public void writeFileContents(String key) throws IOException {
+        try {
+            File fileName = new File(this.fileName);
+            BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
+            try {
+                bw.write(encrypt(this.fileContents, key));
+                bw.close();
+            } catch (IOException ioe) {
+                bw.close();
+                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+            }
+        } catch (FileNotFoundException fnfe) {
+            throw new FileNotFoundException("The file" + this.fileName + " is not available: " + fnfe.getMessage());
+        } catch (NullPointerException npe) {
+            throw new NullPointerException("Null file given: " + npe.getMessage());
+        }
     }
 
 
     /**
      * This method overrides the hashCode() method in the Object class
-     *
      *
      * @return a hashcode of the object
      */
@@ -103,9 +221,9 @@ public class FileClackData extends ClackData {
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
+
     /**
      * This method overrides the toString() method from the ClackData class and the Object class
-     *
      *
      * @return the username, type, date, fileName, and fileContents separated by commas
      */
