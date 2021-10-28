@@ -5,6 +5,9 @@ import data.FileClackData;
 import data.MessageClackData;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -14,14 +17,16 @@ import java.util.Scanner;
  * @author Derryk Taylor
  * @author Jay Donahue
  */
-public class ClackClient {
+public class ClackClient implements Serializable {
     private String userName; /**username of the client*/
     private String hostName; /**host name of the server connected to*/
     private int port; /**port number connected to*/
     private boolean closeConnection; /**whether the connection is open or not*/
     private ClackData dataToSendToServer; /**data sent to the server*/
     private ClackData dataToReceiveFromServer; /**data received from the server*/
-    private Scanner inFromStd = null;
+    private Scanner inFromStd = null; /**Scanner object to read in from standard input*/
+    private ObjectInputStream inFromServer; /**object used to receive data packets*/
+    private ObjectOutputStream outToServer; /**object used to send data packets*/
 
     private static final int DEFAULT_PORT = 7000; /**default port number*/
     private static final String DEFAULT_HOST = "localhost"; /** the server and client programs run on the same computer*/
@@ -41,6 +46,8 @@ public class ClackClient {
         this.userName = userName;
         this.hostName = hostName;
         this.port = port;
+        this.inFromServer = null;
+        this.outToServer = null;
     }
 
     /**
