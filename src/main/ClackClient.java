@@ -41,6 +41,7 @@ public class ClackClient implements Serializable {
         if(userName == null || hostName == null || port < 1024) {
             throw new IllegalArgumentException("Invalid port number, username, and/or hostname being used");
         }
+        this.closeConnection = false;
         this.userName = userName;
         this.hostName = hostName;
         this.port = port;
@@ -85,20 +86,25 @@ public class ClackClient implements Serializable {
      */
     public void start() {
         try {
+            this.hostName = "127.0.0.1";
+            this.port = 7000;
             Socket skt = new Socket(this.hostName, this.port);
-            PrintWriter printWriter = new PrintWriter(skt.getOutputStream(), true);
             outToServer = new ObjectOutputStream(skt.getOutputStream());
             inFromServer = new ObjectInputStream(skt.getInputStream());
             this.inFromStd = new Scanner(System.in);
             closeConnection = false;
             while(!closeConnection) {
+                System.out.println("enter info:");
                 readClientData();
                 if(dataToSendToServer != null) {
                     sendData();
                     receiveData();
                     printData();
                 }
+                dataToSendToServer = null;
             }
+            skt.close();
+            inFromStd.close();
         } catch (NullPointerException e) {
             System.err.println("Null Pointer Exception: " + e.getMessage());
         } catch (IOException e) {
@@ -135,18 +141,16 @@ public class ClackClient implements Serializable {
             }
         } catch (NoSuchElementException e) {
             System.err.println(e.getMessage());
+            this.closeConnection = true;
             inFromStd.close();
         }
-        inFromStd.close();
     }
 
     public void sendData() {
         try {
             outToServer.writeObject(dataToSendToServer);
-        } catch (FileNotFoundException fne) {
-            System.err.println("dataToSendToServer not found: " + fne.getMessage());
         } catch (IOException e) {
-            System.err.println("IO Exception: " + e.getMessage());
+            System.err.println("IO Exception in sendData: " + e.getMessage());
         }
     }
 
@@ -156,7 +160,7 @@ public class ClackClient implements Serializable {
         } catch (FileNotFoundException fne) {
             System.err.println("dataToSendToServer not found: " + fne.getMessage());
         } catch (IOException ioe) {
-            System.err.println("IO Exception: " + ioe.getMessage());
+            System.err.println("IO Exception in receiveData: " + ioe.getMessage());
         } catch (ClassNotFoundException cnfe) {
             System.err.println("Class not found: " + cnfe.getMessage());
         }
@@ -249,5 +253,50 @@ public class ClackClient implements Serializable {
             return output + this.dataToSendToServer.toString() + ",null";
         return output + this.dataToSendToServer.toString() + "," + this.dataToReceiveFromServer.toString();
     }
+
+    public static void main(String[] args) {
+        String userName = "";
+        String hostName = "";
+        String portAsString = "" ;
+        int portNumber = -1;
+        String command;
+        int index1 = 0;
+        int index2 = 0;
+        ClackClient client;
+
+        if(args.length > 0) {
+            command = args[0];
+            if(command.contains("@")) {
+                index1 = command.indexOf('@');
+                userName = command.substring(0,index1);
+                if(command.contains(":")) {
+                    index2 = command.indexOf(':');
+                    hostName = command.substring(index1 + 1,index2);
+                    portAsString = command.substring(index2 + 1, command.length());
+                    try {
+                        portNumber = Integer.parseInt(portAsString);
+                    } catch (NumberFormatException nfe) {
+                        System.err.println("portAsString does not contain only numbers: " + nfe.getMessage());
+                    }
+                } else {
+                    hostName = command.substring(index1,command.length());
+                }
+            }
+            if(hostName == "") {
+                client = new ClackClient(userName);
+            } else if (portNumber == -1) {
+                client = new ClackClient(userName, hostName);
+            } else {
+                client = new ClackClient(userName, hostName, portNumber);
+            }
+        } else {
+            client = new ClackClient();
+        }
+        client.start();
+    }
+
+
+
+
 
 }

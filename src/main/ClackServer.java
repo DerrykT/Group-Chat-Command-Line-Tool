@@ -2,6 +2,10 @@ package main;
 
 import data.ClackData;
 
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 /**
  * The ClackServer class is a blueprint for a ClackServer object that contains information about the
  * port number that clients connect to, a boolean representing whether the server needs to be
@@ -15,6 +19,8 @@ public class ClackServer {
     private boolean closeConnection; /**representing whether the server needs to be closed or not*/
     private ClackData dataToReceiveFromClient; /**data sent to the client*/
     private ClackData dataToSendToClient; /**data received from the client*/
+    private ObjectInputStream inFromClient; /**object used to receive data packets*/
+    private ObjectOutputStream outToClient; /**object used to send data packets*/
 
     private static final int DEFAULT_PORT = 7000; /**the default port number*/
 
@@ -31,6 +37,8 @@ public class ClackServer {
             this.port = DEFAULT_PORT;
         this.dataToReceiveFromClient = null;
         this.dataToSendToClient = null;
+        this.inFromClient = null;
+        this.outToClient = null;
     }
 
     /**
@@ -42,15 +50,44 @@ public class ClackServer {
     }
 
     public void start() {
-        //NO CODE FOR PART 1
+        try {
+            ServerSocket sskt = new ServerSocket(this.port);
+            Socket clientSkt = sskt.accept();
+            outToClient = new ObjectOutputStream(clientSkt.getOutputStream());
+            inFromClient = new ObjectInputStream(clientSkt.getInputStream());
+            closeConnection = false;
+            while(!closeConnection) {
+                receiveData();
+                if(dataToReceiveFromClient != null) {
+                    sendData();
+                } else {
+                    closeConnection = true;
+                }
+            }
+            sskt.close();
+            clientSkt.close();
+        } catch(IOException ioe) {
+            System.err.println("IO Exception: " + ioe.getMessage());
+        }
     }
 
     public void receiveData() {
-        //NO CODE FOR PART 1
+        try {
+            dataToReceiveFromClient = (ClackData) inFromClient.readObject();
+
+        } catch (ClassNotFoundException cnfe) {
+            System.err.println("Class Not Found: " + cnfe.getMessage() );
+        } catch (IOException ioe) {
+            System.err.println("IO Exception: " + ioe.getMessage());
+        }
     }
 
     public void sendData() {
-        //NO CODE FOR PART 1
+        try {
+            outToClient.writeObject(dataToReceiveFromClient);
+        } catch (IOException ioe) {
+            System.err.println("IO Exception " + ioe.getMessage());
+        }
     }
 
     /**
@@ -112,5 +149,29 @@ public class ClackServer {
             return output + this.dataToReceiveFromClient.toString();
         return output + this.dataToReceiveFromClient.toString() + "," + this.dataToSendToClient.toString();
     }
+
+    public static void main(String[] args) {
+        ClackServer server;
+        String portAsString;
+        int portNumber = 0;
+        if(args.length > 0) {
+//            portAsString = args[0];
+            portAsString = "7000";
+            try {
+                portNumber = Integer.parseInt(portAsString);
+                server = new ClackServer(portNumber);
+                server.start();
+            } catch (NumberFormatException nfe) {
+                System.err.println("Port number given is not an integer: " + nfe.getMessage());
+            }
+        } else {
+            server = new ClackServer();
+            server.start();
+        }
+    }
+
+
+
+
 
 }

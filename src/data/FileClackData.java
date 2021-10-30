@@ -175,7 +175,6 @@ public class FileClackData extends ClackData {
      * to the instance variable fileName
      *
      * @param key the key used to encrypt the file contents
-     * @throws IOException
      */
     public void writeFileContents(String key) {
         try {

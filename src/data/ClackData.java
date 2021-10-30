@@ -1,6 +1,7 @@
 package data;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +12,7 @@ import java.util.HashMap;
  * @author Derryk Taylor
  * @author Jay Donahue
  */
-public abstract class ClackData {
+public abstract class ClackData implements Serializable {
     private String userName; /**represents name of client user*/
     private int type; /**represents the kind of data exchanged between the client and the server*/
     private Date date; /**represents date when ClackData object was created*/
