@@ -4,10 +4,8 @@ import data.ClackData;
 import data.FileClackData;
 import data.MessageClackData;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -87,13 +85,24 @@ public class ClackClient implements Serializable {
      */
     public void start() {
         try {
+            Socket skt = new Socket(this.hostName, this.port);
+            PrintWriter printWriter = new PrintWriter(skt.getOutputStream(), true);
+            outToServer = new ObjectOutputStream(skt.getOutputStream());
+            inFromServer = new ObjectInputStream(skt.getInputStream());
             this.inFromStd = new Scanner(System.in);
-            readClientData();
-            dataToReceiveFromServer = dataToSendToServer; //Temporary code to aid debugging for Part 2
-            printData();
+            closeConnection = false;
+            while(!closeConnection) {
+                readClientData();
+                if(dataToSendToServer != null) {
+                    sendData();
+                    receiveData();
+                    printData();
+                }
+            }
         } catch (NullPointerException e) {
-            //used to catch cases where LISTUSERS or DONE is called, dataToReceiveFromServer is null if those options are called
-//            System.out.println("The connection is closed: " + this.closeConnection);
+            System.err.println("Null Pointer Exception: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("IO Exception: " + e.getMessage());
         }
     }
 
@@ -109,13 +118,9 @@ public class ClackClient implements Serializable {
             } else if (input.equals("SENDFILE")) {
                 String filename = inFromStd.next();
                 this.dataToSendToServer = new FileClackData(this.userName, filename, ClackData.CONSTANT_SENDFILE);
-                try {
-                    ((FileClackData)this.dataToSendToServer).readFileContents("TIME");
-                } catch (IOException e) {
-                    dataToSendToServer = null;
-                    System.err.println("Failed to read " + filename);
-                    System.err.println(e.getMessage());
-                    inFromStd.close();
+                ((FileClackData)this.dataToSendToServer).readFileContents("TIME");
+                if(this.dataToSendToServer.getData() == "") {
+                    this.dataToSendToServer = null;
                 }
             } else if (input.equals("LISTUSERS")) {
                 System.out.println("list users called"); //used only for debugging purposes, will be deleted
@@ -136,11 +141,25 @@ public class ClackClient implements Serializable {
     }
 
     public void sendData() {
-        //NO CODE FOR PART 2
+        try {
+            outToServer.writeObject(dataToSendToServer);
+        } catch (FileNotFoundException fne) {
+            System.err.println("dataToSendToServer not found: " + fne.getMessage());
+        } catch (IOException e) {
+            System.err.println("IO Exception: " + e.getMessage());
+        }
     }
 
     public void receiveData() {
-        //NO CODE FOR PART 2
+        try {
+            dataToReceiveFromServer = (ClackData) inFromServer.readObject();
+        } catch (FileNotFoundException fne) {
+            System.err.println("dataToSendToServer not found: " + fne.getMessage());
+        } catch (IOException ioe) {
+            System.err.println("IO Exception: " + ioe.getMessage());
+        } catch (ClassNotFoundException cnfe) {
+            System.err.println("Class not found: " + cnfe.getMessage());
+        }
     }
 
     /**

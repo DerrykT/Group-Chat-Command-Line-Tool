@@ -117,7 +117,7 @@ public class FileClackData extends ClackData {
      * @param key the key used to decrypt file content
      * @throws IOException
      */
-    public void readFileContents(String key) throws IOException {
+    public void readFileContents(String key) {
         try {
             File fileName = new File(this.fileName);
             BufferedReader br = new BufferedReader(new FileReader(fileName));
@@ -126,19 +126,21 @@ public class FileClackData extends ClackData {
                 String line;
 
                 while((line = br.readLine()) != EOS) {
-                    fileData += encrypt(line, key);
+                    fileData += line;
                 }
-
+                fileData = encrypt(fileData, key);
                 br.close();
                 this.fileContents = fileData;
             } catch (IOException ioe) {
                 br.close();
-                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+                System.err.println("IO Exception occurred: " + ioe.getMessage());
             }
         } catch (FileNotFoundException fnfe) {
-            throw new FileNotFoundException("The file" + this.fileName + " is not available: " + fnfe.getMessage());
+            System.err.println("The file" + this.fileName + " is not available: " + fnfe.getMessage());
         } catch (NullPointerException npe) {
-            throw new NullPointerException("Null file given: " + npe.getMessage());
+            System.err.println("Null file given: " + npe.getMessage());
+        } catch (IOException e) {
+            System.err.println("IO Exception occurred: " + e.getMessage());
         }
     }
 
@@ -148,7 +150,7 @@ public class FileClackData extends ClackData {
      *
      * @throws IOException
      */
-    public void writeFileContents() throws IOException {
+    public void writeFileContents() {
         try {
             File fileName = new File(this.fileName);
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
@@ -157,12 +159,14 @@ public class FileClackData extends ClackData {
                 bw.close();
             } catch (IOException ioe) {
                 bw.close();
-                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+                System.err.println("IO Exception occurred: " + ioe.getMessage());
             }
         } catch (FileNotFoundException fnfe) {
-            throw new FileNotFoundException("The file" + this.fileName + " is not available: " + fnfe.getMessage());
+            System.err.println("The file" + this.fileName + " is not available: " + fnfe.getMessage());
         } catch (NullPointerException npe) {
-            throw new NullPointerException("Null file given: " + npe.getMessage());
+            System.err.println("Null file given: " + npe.getMessage());
+        } catch (IOException ioe) {
+            System.err.println("IO Exception occurred: " + ioe.getMessage());
         }
     }
 
@@ -173,7 +177,7 @@ public class FileClackData extends ClackData {
      * @param key the key used to encrypt the file contents
      * @throws IOException
      */
-    public void writeFileContents(String key) throws IOException {
+    public void writeFileContents(String key) {
         try {
             File fileName = new File(this.fileName);
             BufferedWriter bw = new BufferedWriter(new FileWriter(fileName));
@@ -181,13 +185,14 @@ public class FileClackData extends ClackData {
                 bw.write(decrypt(this.fileContents, key));
                 bw.close();
             } catch (IOException ioe) {
-                bw.close();
-                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+                System.err.println("IO Exception occurred: " + ioe.getMessage());
             }
         } catch (FileNotFoundException fnfe) {
-            throw new FileNotFoundException("The file" + this.fileName + " is not available: " + fnfe.getMessage());
+            System.err.println("The file" + this.fileName + " is not available: " + fnfe.getMessage());
         } catch (NullPointerException npe) {
-            throw new NullPointerException("Null file given: " + npe.getMessage());
+            System.err.println("Null file given: " + npe.getMessage());
+        } catch (IOException e) {
+            System.err.println("IO Exception occurred: " + e.getMessage());
         }
     }
 
