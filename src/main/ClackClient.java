@@ -15,7 +15,7 @@ import java.util.Scanner;
  * @author Derryk Taylor
  * @author Jay Donahue
  */
-public class ClackClient implements Serializable {
+public class ClackClient {
     private String userName; /**username of the client*/
     private String hostName; /**host name of the server connected to*/
     private int port; /**port number connected to*/
@@ -36,6 +36,7 @@ public class ClackClient implements Serializable {
      * @param userName new userName value
      * @param hostName new hostName value
      * @param port new port value
+     * @throws IllegalArgumentException
      */
     public ClackClient( String userName, String hostName, int port ) throws IllegalArgumentException {
         if(userName == null || hostName == null || port < 1024) {
@@ -82,12 +83,10 @@ public class ClackClient implements Serializable {
     }
 
     /**
-     * This method starts this client's communication with the server
+     * This method starts this client's communication with the server.
      */
     public void start() {
         try {
-            this.hostName = "127.0.0.1";
-            this.port = 7000;
             Socket skt = new Socket(this.hostName, this.port);
             outToServer = new ObjectOutputStream(skt.getOutputStream());
             inFromServer = new ObjectInputStream(skt.getInputStream());
@@ -146,6 +145,9 @@ public class ClackClient implements Serializable {
         }
     }
 
+    /**
+     * This method writes the object dataToSendToServer out to the server using the outToServer ObjectOutputStream object
+     */
     public void sendData() {
         try {
             outToServer.writeObject(dataToSendToServer);
@@ -154,6 +156,10 @@ public class ClackClient implements Serializable {
         }
     }
 
+    /**
+     * This method receives a ClackData object from the server using the inFromServer ObjectInputStream object and sets
+     * the value of dataToReceiveFromServer to the received ClackData object.
+     */
     public void receiveData() {
         try {
             dataToReceiveFromServer = (ClackData) inFromServer.readObject();
@@ -254,6 +260,12 @@ public class ClackClient implements Serializable {
         return output + this.dataToSendToServer.toString() + "," + this.dataToReceiveFromServer.toString();
     }
 
+    /**
+     * creates a new ClackClient object with values read in from the command line and starts the communication to the
+     * server
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         String userName = "";
         String hostName = "";

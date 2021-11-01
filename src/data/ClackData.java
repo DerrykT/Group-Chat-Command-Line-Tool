@@ -7,15 +7,15 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
- * This is an abstract class that all ClackData classes will inherit from.
+ * This is an abstract class that all ClackData classes will inherit from. It implements the Serializable interface.
  *
  * @author Derryk Taylor
  * @author Jay Donahue
  */
 public abstract class ClackData implements Serializable {
-    private String userName; /**represents name of client user*/
-    private int type; /**represents the kind of data exchanged between the client and the server*/
-    private Date date; /**represents date when ClackData object was created*/
+    private String userName; ///**represents name of client user*/
+    private int type; ///**represents the kind of data exchanged between the client and the server*/
+    private Date date; ///**represents date when ClackData object was created*/
 
     public static final int CONSTANT_LISTUSERS = 0; /**give a listing of all users connected to this session*/
     public static final int CONSTANT_LOGOUT = 1; /**close this client's connection*/

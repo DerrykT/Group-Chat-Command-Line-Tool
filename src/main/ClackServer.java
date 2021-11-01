@@ -28,17 +28,19 @@ public class ClackServer {
      * This ClackServer constructor initializes port to a user-provided value and initializes
      * dataToReceiveFromClient and dataToSendToClient to null values.
      *
-     * @param port
+     * @param port new port value
+     * @throws IllegalArgumentException
      */
-    public ClackServer( int port ) {
-        if (port < 0)
+    public ClackServer( int port ) throws IllegalArgumentException{
+        if (port < 1024) {
+            throw new IllegalArgumentException("port number is less than 1024");
+        } else {
             this.port = port;
-        else
-            this.port = DEFAULT_PORT;
-        this.dataToReceiveFromClient = null;
-        this.dataToSendToClient = null;
-        this.inFromClient = null;
-        this.outToClient = null;
+            this.dataToReceiveFromClient = null;
+            this.dataToSendToClient = null;
+            this.inFromClient = null;
+            this.outToClient = null;
+        }
     }
 
     /**
@@ -49,6 +51,9 @@ public class ClackServer {
         this( DEFAULT_PORT );
     }
 
+    /**
+     * This method initializes the ServerSocket and starts the communication with the ClackClient class.
+     */
     public void start() {
         try {
             ServerSocket sskt = new ServerSocket(this.port);
@@ -59,6 +64,7 @@ public class ClackServer {
             while(!closeConnection) {
                 receiveData();
                 if(dataToReceiveFromClient != null) {
+                    dataToSendToClient = dataToReceiveFromClient; //echoing back to client for PART 3
                     sendData();
                 } else {
                     closeConnection = true;
@@ -67,26 +73,38 @@ public class ClackServer {
             sskt.close();
             clientSkt.close();
         } catch(IOException ioe) {
-            System.err.println("IO Exception: " + ioe.getMessage());
+            System.err.println("IO Exception in start method: " + ioe.getMessage());
         }
     }
 
+    /**
+     * This method is used to receive ClackData objects from the ClackClient class using the inFromClient ObjectInputStream
+     * object. It then sets the value of dataToReceiveFromClient to the read in object.
+     */
     public void receiveData() {
         try {
             dataToReceiveFromClient = (ClackData) inFromClient.readObject();
-
+            if(dataToReceiveFromClient == null) {
+                this.closeConnection = true;
+            }
         } catch (ClassNotFoundException cnfe) {
             System.err.println("Class Not Found: " + cnfe.getMessage() );
+            this.closeConnection = true;
         } catch (IOException ioe) {
-            System.err.println("IO Exception: " + ioe.getMessage());
+            this.closeConnection = true;
         }
     }
 
+    /**
+     * This method is used to send data to the ClackClient class by using the outToClient ObjectOutputStream object.
+     */
     public void sendData() {
         try {
-            outToClient.writeObject(dataToReceiveFromClient);
+            outToClient.writeObject(dataToSendToClient);
+            System.out.println(dataToSendToClient.getData("TIME")); //USED FOR DEBUGGING IN PART 3
         } catch (IOException ioe) {
-            System.err.println("IO Exception " + ioe.getMessage());
+            System.err.println("IO Exception in sendData: " + ioe.getMessage());
+            this.closeConnection = true;
         }
     }
 
@@ -155,8 +173,7 @@ public class ClackServer {
         String portAsString;
         int portNumber = 0;
         if(args.length > 0) {
-//            portAsString = args[0];
-            portAsString = "7000";
+            portAsString = args[0];
             try {
                 portNumber = Integer.parseInt(portAsString);
                 server = new ClackServer(portNumber);

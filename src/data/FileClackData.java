@@ -115,7 +115,6 @@ public class FileClackData extends ClackData {
      * to the decrypted file content.
      *
      * @param key the key used to decrypt file content
-     * @throws IOException
      */
     public void readFileContents(String key) {
         try {
@@ -148,7 +147,6 @@ public class FileClackData extends ClackData {
      * This method does a non-secure file write of the fileContent instance variable
      * to the instance variable fileName.
      *
-     * @throws IOException
      */
     public void writeFileContents() {
         try {
