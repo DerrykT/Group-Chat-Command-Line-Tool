@@ -27,6 +27,12 @@ public class TestClackClient {
 
             4.  INPUT: this is a message DONE
                 OUTPUT: this is a message DONE
+
+
+            RUN THIS COMMAND FOR SERVER
+            -java –jar ClackServer.jar 12415
+            RUN THIS COMMAND FOR CLIENT
+            -java -jar ClackClient.jar Sherlock@localhost:12415
         */
 
 

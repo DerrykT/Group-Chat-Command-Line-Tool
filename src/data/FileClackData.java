@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
  * @author Derryk Taylor
  * @author Jay Donahue
  */
-public class FileClackData extends ClackData {
+public class FileClackData extends ClackData implements Serializable {
     private String fileName; /**represents name of file*/
     private String fileContents; /**represents contents of file*/
 
@@ -231,7 +231,6 @@ public class FileClackData extends ClackData {
      */
     @Override
     public String toString() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         String output = super.toString() + "," + this.fileName + ",";
         //cannot return null values so toString checks if fileContents is null
         if(this.fileContents == null) {

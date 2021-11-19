@@ -21,6 +21,7 @@ public abstract class ClackData implements Serializable {
     public static final int CONSTANT_LOGOUT = 1; /**close this client's connection*/
     public static final int CONSTANT_SENDMESSAGE = 2; /**send a message*/
     public static final int CONSTANT_SENDFILE = 3; /**send a file*/
+    public static final int CONSTANT_SENDUSERNAME = 4; /**send a file*/
     public static final String CONSTANT_LOWERCASE_ALPHABET = "abcdefghijklmnopqrstuvwxyz";
     public static final String CONSTANT_UPPERCASE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int CONSTANT_ALPHABET_LENGTH = 26;

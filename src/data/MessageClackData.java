@@ -1,5 +1,7 @@
 package data;
 
+import java.io.Serializable;
+
 /**
  * This class inherits from the ClackData class and contains
  * the message value of a Clack message
@@ -7,7 +9,7 @@ package data;
  * @author Derryk Taylor
  * @author Jay Donahue
  */
-public class MessageClackData extends ClackData {
+public class MessageClackData extends ClackData implements Serializable {
 
     private String message; /**represents instant message content*/
 

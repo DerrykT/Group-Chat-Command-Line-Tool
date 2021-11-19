@@ -1,10 +1,13 @@
 package main;
 
 import data.ClackData;
+import data.MessageClackData;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The ClackServer class is a blueprint for a ClackServer object that contains information about the
@@ -17,10 +20,7 @@ import java.net.Socket;
 public class ClackServer {
     private int port; /**port number that clients connect to*/
     private boolean closeConnection; /**representing whether the server needs to be closed or not*/
-    private ClackData dataToReceiveFromClient; /**data sent to the client*/
-    private ClackData dataToSendToClient; /**data received from the client*/
-    private ObjectInputStream inFromClient; /**object used to receive data packets*/
-    private ObjectOutputStream outToClient; /**object used to send data packets*/
+    List<ServerSideClientIO> serverSideClientIOList;
 
     private static final int DEFAULT_PORT = 7000; /**the default port number*/
 
@@ -36,10 +36,7 @@ public class ClackServer {
             throw new IllegalArgumentException("port number is less than 1024");
         } else {
             this.port = port;
-            this.dataToReceiveFromClient = null;
-            this.dataToSendToClient = null;
-            this.inFromClient = null;
-            this.outToClient = null;
+            serverSideClientIOList = new ArrayList<ServerSideClientIO>();
         }
     }
 
@@ -57,56 +54,53 @@ public class ClackServer {
     public void start() {
         try {
             ServerSocket sskt = new ServerSocket(this.port);
-            Socket clientSkt = sskt.accept();
-            outToClient = new ObjectOutputStream(clientSkt.getOutputStream());
-            inFromClient = new ObjectInputStream(clientSkt.getInputStream());
+            Socket clientSkt;
             closeConnection = false;
+            ServerSideClientIO ssc;
+            Thread thread;
             while(!closeConnection) {
-                receiveData();
-                if(dataToReceiveFromClient != null) {
-                    dataToSendToClient = dataToReceiveFromClient; //echoing back to client for PART 3
-                    sendData();
-                } else {
-                    closeConnection = true;
-                }
+                clientSkt = sskt.accept();
+                ssc = new ServerSideClientIO(this, clientSkt);
+                thread = new Thread(ssc);
+                thread.start();
+                serverSideClientIOList.add(ssc);
             }
             sskt.close();
-            clientSkt.close();
         } catch(IOException ioe) {
             System.err.println("IO Exception in start method: " + ioe.getMessage());
         }
     }
 
-    /**
-     * This method is used to receive ClackData objects from the ClackClient class using the inFromClient ObjectInputStream
-     * object. It then sets the value of dataToReceiveFromClient to the read in object.
-     */
-    public void receiveData() {
-        try {
-            dataToReceiveFromClient = (ClackData) inFromClient.readObject();
-            if(dataToReceiveFromClient == null) {
-                this.closeConnection = true;
-            }
-        } catch (ClassNotFoundException cnfe) {
-            System.err.println("Class Not Found: " + cnfe.getMessage() );
-            this.closeConnection = true;
-        } catch (IOException ioe) {
-            this.closeConnection = true;
+    public synchronized void remove(ServerSideClientIO client) {
+        this.serverSideClientIOList.remove(client);
+    }
+
+    public synchronized void broadcast(ClackData data) {
+        for(ServerSideClientIO client : this.serverSideClientIOList) {
+            client.setDataToSendToClient(data);
+            client.sendData();
         }
     }
 
-    /**
-     * This method is used to send data to the ClackClient class by using the outToClient ObjectOutputStream object.
-     */
-    public void sendData() {
-        try {
-            outToClient.writeObject(dataToSendToClient);
-            System.out.println(dataToSendToClient.getData("TIME")); //USED FOR DEBUGGING IN PART 3
-        } catch (IOException ioe) {
-            System.err.println("IO Exception in sendData: " + ioe.getMessage());
-            this.closeConnection = true;
+    public String printUserList() {
+        String out = "";
+        int i = 1;
+        for(ServerSideClientIO clientIO : serverSideClientIOList) {
+            out += "User [" + i + "] : " + clientIO.getUsernameRequest().getUserName() + "\n";
+            i++;
+        }
+        return out;
+    }
+
+    public void getUsers(ServerSideClientIO ssc) {
+        for(ServerSideClientIO c : serverSideClientIOList) {
+            if(c.equals(ssc)) {
+                String userList = printUserList();
+                ssc.sendData(new MessageClackData("server", userList, "TIME",ClackData.CONSTANT_SENDMESSAGE));
+            }
         }
     }
+
 
     /**
      * This is the accessor for the port
@@ -130,14 +124,6 @@ public class ClackServer {
             result = 37*result + 1;
         else
             result = 37*result;
-        if(this.dataToReceiveFromClient == null)
-            result = 37*result + 100;
-        else
-            result = 37*result + this.dataToReceiveFromClient.hashCode();
-        if(this.dataToSendToClient == null)
-            result = 37*result + 105;
-        else
-            result = 37*result + this.dataToSendToClient.hashCode();
         return result;
     }
     /**
@@ -158,14 +144,8 @@ public class ClackServer {
      */
     @Override
     public String toString() {
-        String output = "" + this.port + "," + this.closeConnection + ",";
-        if(this.dataToReceiveFromClient == null && this.dataToSendToClient == null)
-            return output + "null,null";
-        if(this.dataToReceiveFromClient == null)
-            return output + this.dataToSendToClient.toString();
-        if(this.dataToSendToClient == null)
-            return output + this.dataToReceiveFromClient.toString();
-        return output + this.dataToReceiveFromClient.toString() + "," + this.dataToSendToClient.toString();
+        String output = "" + this.port + "," + this.closeConnection;
+        return output;
     }
 
     public static void main(String[] args) {

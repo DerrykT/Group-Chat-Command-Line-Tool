@@ -90,17 +90,15 @@ public class ClackClient {
             Socket skt = new Socket(this.hostName, this.port);
             outToServer = new ObjectOutputStream(skt.getOutputStream());
             inFromServer = new ObjectInputStream(skt.getInputStream());
+            Thread thread = new Thread(new ClientSideServerListener(this));
             this.inFromStd = new Scanner(System.in);
             closeConnection = false;
+            thread.start();
+            this.dataToSendToServer = new MessageClackData(this.userName, null, ClackData.CONSTANT_SENDUSERNAME);
+            sendData();
             while(!closeConnection) {
-                System.out.println("enter info:");
                 readClientData();
-                if(dataToSendToServer != null) {
-                    sendData();
-                    receiveData();
-                    printData();
-                }
-                dataToSendToServer = null;
+                sendData();
             }
             skt.close();
             inFromStd.close();
@@ -120,6 +118,7 @@ public class ClackClient {
             String input = inFromStd.next();
             if (input.equals("DONE")) {
                 this.closeConnection = true;
+                this.dataToSendToServer = new MessageClackData(this.userName, "", ClackData.CONSTANT_LOGOUT);
             } else if (input.equals("SENDFILE")) {
                 String filename = inFromStd.next();
                 this.dataToSendToServer = new FileClackData(this.userName, filename, ClackData.CONSTANT_SENDFILE);
@@ -128,8 +127,7 @@ public class ClackClient {
                     this.dataToSendToServer = null;
                 }
             } else if (input.equals("LISTUSERS")) {
-                System.out.println("list users called"); //used only for debugging purposes, will be deleted
-                //Does Nothing For Part 2 of Project
+                this.dataToSendToServer = new MessageClackData(this.userName, "", ClackData.CONSTANT_LISTUSERS);
             } else {
                 String message = input;
                 while(!input.contains("DONE")) {
@@ -150,7 +148,11 @@ public class ClackClient {
      */
     public void sendData() {
         try {
-            outToServer.writeObject(dataToSendToServer);
+            if(dataToSendToServer != null) {
+                outToServer.writeObject(dataToSendToServer);
+                outToServer.flush();
+                System.out.println("SENDING TO SERVER.......");
+            }
         } catch (IOException e) {
             System.err.println("IO Exception in sendData: " + e.getMessage());
         }
@@ -162,7 +164,9 @@ public class ClackClient {
      */
     public void receiveData() {
         try {
-            dataToReceiveFromServer = (ClackData) inFromServer.readObject();
+            if(!closeConnection) {
+                dataToReceiveFromServer = (ClackData) inFromServer.readObject();
+            }
         } catch (FileNotFoundException fne) {
             System.err.println("dataToSendToServer not found: " + fne.getMessage());
         } catch (IOException ioe) {
@@ -177,7 +181,11 @@ public class ClackClient {
      * standard output and the getData() abstract method
      */
     public void printData() {
-        System.out.println(this.dataToReceiveFromServer.getData("TIME"));
+        if(closeConnection) {
+            //do nothing because connection is closed
+        } else if((this.dataToReceiveFromServer.getType() == ClackData.CONSTANT_SENDMESSAGE) || (this.dataToReceiveFromServer.getType() == ClackData.CONSTANT_SENDFILE)) {
+            System.out.println(this.dataToReceiveFromServer.getUserName() + ":  " + this.dataToReceiveFromServer.getData("TIME"));
+        }
     }
 
     /**
@@ -187,6 +195,15 @@ public class ClackClient {
      */
     public String getUserName() {
         return userName;
+    }
+
+    /**
+     * This is the accessor for userName
+     *
+     * @return the closeConnection boolean
+     */
+    public Boolean getCloseConnection() {
+        return this.closeConnection;
     }
 
     /**
