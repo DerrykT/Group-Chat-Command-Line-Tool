@@ -66,7 +66,7 @@ public class MessageClackData extends ClackData implements Serializable {
      * the abstract class ClackData
      *
      * @param key the key used the decrypt the message
-     * @return
+     * @return decrypted message data
      */
     public String getData(String key) {
         return decrypt(this.message, key);

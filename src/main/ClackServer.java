@@ -20,16 +20,16 @@ import java.util.List;
 public class ClackServer {
     private int port; /**port number that clients connect to*/
     private boolean closeConnection; /**representing whether the server needs to be closed or not*/
-    List<ServerSideClientIO> serverSideClientIOList;
+    List<ServerSideClientIO> serverSideClientIOList; /**list containing all ServerSideClientIO threads*/
 
     private static final int DEFAULT_PORT = 7000; /**the default port number*/
 
     /**
-     * This ClackServer constructor initializes port to a user-provided value and initializes
+     * This ClackServer constructor initializes port to a user-provided value, serverSideClientIOList to new ArrayList and initializes
      * dataToReceiveFromClient and dataToSendToClient to null values.
      *
      * @param port new port value
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException thrown when port is less than 1024
      */
     public ClackServer( int port ) throws IllegalArgumentException{
         if (port < 1024) {
@@ -49,7 +49,8 @@ public class ClackServer {
     }
 
     /**
-     * This method initializes the ServerSocket and starts the communication with the ClackClient class.
+     * This method initializes the ServerSocket and starts the communication with the ClackClient class and creates a ServerSideClientIO
+     * thread for each client.
      */
     public void start() {
         try {
@@ -71,10 +72,21 @@ public class ClackServer {
         }
     }
 
+    /**
+     * This method removes a ServerSideClientIO instance from the serverSideClientIOList ArrayList.
+     *
+     * @param client ServerSideClientIO instance to be removed
+     */
     public synchronized void remove(ServerSideClientIO client) {
+        System.out.println(client.getDataToReceiveFromClient().getUserName() + " has disconnected");
         this.serverSideClientIOList.remove(client);
     }
 
+    /**
+     * This method sends data to all clients inside the serverSideClientIOList using the sendData() method.
+     *
+     * @param data ClackData object to send to all clients
+     */
     public synchronized void broadcast(ClackData data) {
         for(ServerSideClientIO client : this.serverSideClientIOList) {
             client.setDataToSendToClient(data);
@@ -82,21 +94,31 @@ public class ClackServer {
         }
     }
 
-    public String printUserList() {
+    /**
+     * This method returns a string containing all client userNames currently connected to the server
+     *
+     * @return string containing all client usernames
+     */
+    public synchronized String printUserList() {
         String out = "";
         int i = 1;
-        for(ServerSideClientIO clientIO : serverSideClientIOList) {
-            out += "User [" + i + "] : " + clientIO.getUsernameRequest().getUserName() + "\n";
+        for(ServerSideClientIO clientIO : this.serverSideClientIOList) {
+            out += "User [" + i + "] : " + clientIO.getDataToReceiveFromClient().getUserName() + "\n";
             i++;
         }
         return out;
     }
 
-    public void getUsers(ServerSideClientIO ssc) {
-        for(ServerSideClientIO c : serverSideClientIOList) {
+    /**
+     * This method finds the user that requested a list of all users and sends that list to the client
+     *
+     * @param ssc client requesting list of all users
+     */
+    public synchronized void getUsers(ServerSideClientIO ssc) {
+        for(ServerSideClientIO c : this.serverSideClientIOList) {
             if(c.equals(ssc)) {
                 String userList = printUserList();
-                ssc.sendData(new MessageClackData("server", userList, "TIME",ClackData.CONSTANT_SENDMESSAGE));
+                ssc.sendData(new MessageClackData("server", userList, "TIME",ClackData.CONSTANT_LISTUSERS));
             }
         }
     }
@@ -136,6 +158,7 @@ public class ClackServer {
     public boolean equals(Object obj) {
         return this.toString().equals(obj.toString());
     }
+
     /**
      * This method overrides the toString() method from the ClackData class and the Object class
      *

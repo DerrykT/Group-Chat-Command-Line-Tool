@@ -36,7 +36,7 @@ public class ClackClient {
      * @param userName new userName value
      * @param hostName new hostName value
      * @param port new port value
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException thrown when userName or hostName is null or port is less than 1024
      */
     public ClackClient( String userName, String hostName, int port ) throws IllegalArgumentException {
         if(userName == null || hostName == null || port < 1024) {
@@ -83,7 +83,7 @@ public class ClackClient {
     }
 
     /**
-     * This method starts this client's communication with the server.
+     * This method starts this client's communication with the server and creates a ClientSideServerListener thread.
      */
     public void start() {
         try {
@@ -95,13 +95,15 @@ public class ClackClient {
             closeConnection = false;
             thread.start();
             this.dataToSendToServer = new MessageClackData(this.userName, null, ClackData.CONSTANT_SENDUSERNAME);
-            sendData();
+            sendData(); //sets the dataToReceive variable in ServerSideClientIO in the case "LISTUSERS" is called with no previous comunication
             while(!closeConnection) {
                 readClientData();
                 sendData();
             }
-            skt.close();
             inFromStd.close();
+            this.outToServer.close();
+            this.inFromServer.close();
+            skt.close();
         } catch (NullPointerException e) {
             System.err.println("Null Pointer Exception: " + e.getMessage());
         } catch (IOException e) {
@@ -151,7 +153,6 @@ public class ClackClient {
             if(dataToSendToServer != null) {
                 outToServer.writeObject(dataToSendToServer);
                 outToServer.flush();
-                System.out.println("SENDING TO SERVER.......");
             }
         } catch (IOException e) {
             System.err.println("IO Exception in sendData: " + e.getMessage());
@@ -170,7 +171,7 @@ public class ClackClient {
         } catch (FileNotFoundException fne) {
             System.err.println("dataToSendToServer not found: " + fne.getMessage());
         } catch (IOException ioe) {
-            System.err.println("IO Exception in receiveData: " + ioe.getMessage());
+//            System.err.println("IO Exception in receiveData: " + ioe.getMessage());
         } catch (ClassNotFoundException cnfe) {
             System.err.println("Class not found: " + cnfe.getMessage());
         }
@@ -185,6 +186,8 @@ public class ClackClient {
             //do nothing because connection is closed
         } else if((this.dataToReceiveFromServer.getType() == ClackData.CONSTANT_SENDMESSAGE) || (this.dataToReceiveFromServer.getType() == ClackData.CONSTANT_SENDFILE)) {
             System.out.println(this.dataToReceiveFromServer.getUserName() + ":  " + this.dataToReceiveFromServer.getData("TIME"));
+        } else if(this.dataToReceiveFromServer.getType() == ClackData.CONSTANT_LISTUSERS) {
+            System.out.println("{USER-LIST}\n" + this.dataToReceiveFromServer.getData("TIME"));
         }
     }
 

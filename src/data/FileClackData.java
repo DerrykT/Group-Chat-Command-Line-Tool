@@ -71,7 +71,7 @@ public class FileClackData extends ClackData implements Serializable {
      * This method overrides the getData(String key) abstract method
      * of the abstract class ClackData.
      *
-     * @param key
+     * @param key key used to decrypt data
      * @return decrypted value of fileContent
      */
     public String getData(String key) {
@@ -82,7 +82,6 @@ public class FileClackData extends ClackData implements Serializable {
      * This method does a non-secure file read of the fileName instance variable and sets
      * the instance variable fileContents to the the contents read from the file.
      *
-     * @throws IOException
      */
     public void readFileContents() throws IOException {
         try {
@@ -100,7 +99,7 @@ public class FileClackData extends ClackData implements Serializable {
                 this.fileContents = fileData;
             } catch (IOException ioe) {
                 br.close();
-                throw new IOException("IO Exception occurred: " + ioe.getMessage());
+                System.out.println("IOException in reading file: " + ioe.getMessage());
             }
         } catch (FileNotFoundException fnfe) {
             throw new FileNotFoundException("The file " + this.fileName + " is not available: " + fnfe.getMessage());
@@ -146,7 +145,6 @@ public class FileClackData extends ClackData implements Serializable {
     /**
      * This method does a non-secure file write of the fileContent instance variable
      * to the instance variable fileName.
-     *
      */
     public void writeFileContents() {
         try {

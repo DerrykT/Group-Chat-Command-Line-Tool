@@ -21,7 +21,7 @@ public abstract class ClackData implements Serializable {
     public static final int CONSTANT_LOGOUT = 1; /**close this client's connection*/
     public static final int CONSTANT_SENDMESSAGE = 2; /**send a message*/
     public static final int CONSTANT_SENDFILE = 3; /**send a file*/
-    public static final int CONSTANT_SENDUSERNAME = 4; /**send a file*/
+    public static final int CONSTANT_SENDUSERNAME = 4; /**used when communicating usernames to server*/
     public static final String CONSTANT_LOWERCASE_ALPHABET = "abcdefghijklmnopqrstuvwxyz";
     public static final String CONSTANT_UPPERCASE_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int CONSTANT_ALPHABET_LENGTH = 26;
@@ -32,8 +32,8 @@ public abstract class ClackData implements Serializable {
      * user-provided values and initializes the date to the date it is
      * initialized on.
      *
-     * @param userName
-     * @param type
+     * @param userName new userName value
+     * @param type new type value
      */
     public ClackData( String userName, int type ) {
         this.userName = userName;
@@ -46,7 +46,7 @@ public abstract class ClackData implements Serializable {
      * and the date to the date it is initialized on. It initializes
      * the type to a user-provided value.
      *
-     * @param type
+     * @param type new type value
      */
     public ClackData( int type ) {
         this( "ANON", type );
@@ -99,7 +99,7 @@ public abstract class ClackData implements Serializable {
      * This is an abstract overloaded method that accesses the data of
      * a class and decrypts it using the key parameter
      *
-     * @param key
+     * @param key key used to decrypt data
      * @return the decrypted data contained in a ClackData class
      */
     public abstract Object getData(String key);
