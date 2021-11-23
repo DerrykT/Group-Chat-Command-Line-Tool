@@ -136,6 +136,7 @@ public class ClackClient {
                     input = inFromStd.nextLine();
                     message = message + input + "\n";
                 }
+                message = message.substring(0,message.length()-5);
                 this.dataToSendToServer = new MessageClackData(this.userName, message, "TIME",ClackData.CONSTANT_SENDMESSAGE);
             }
         } catch (NoSuchElementException e) {
